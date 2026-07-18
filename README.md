@@ -1,90 +1,77 @@
-# AI-Powered MIS Assistant (Pharma Sales & Inventory Engine)
+# 📊 AI-Powered MIS Assistant
 
-An intelligent, conversational Management Information System (MIS) Assistant tailored for the pharmaceutical distribution industry. Built on top of **Google Apps Script** and powered by **Gemini 2.5 Flash**, this tool transforms flat spreadsheets (80,000+ rows) into a blazing-fast, secure, conversational data analytics engine that processes natural language queries (English/Hinglish) and automatically generates dynamic downloadable Excel reports.
+> **Enterprise-Grade Conversational Analytics Engine for Pharma Sales Teams**  
+> *Built specifically to empower sales reps and managers, eliminating manual Excel filtering and pivot table dependencies.*
 
 ---
 
-## 🚀 Key Features
+## 📌 Overview
 
-### 1. Conversational Data Interface
-* Fully understands text prompts in English, Hindi, and Hinglish.
-* Dynamically parses user intent into strict query schemas using Gemini's structured JSON outputs.
-* Automatically aligns misspelled or shorthand names (e.g., matching "nandini" to `NANDANI (SALES)`) by validating inputs against live datasets.
+An intelligent, cloud-based Management Information System (MIS) Assistant tailored for the pharmaceutical distribution industry. Built entirely on the **Google Workspace ecosystem (Apps Script)** and powered by **Google Gemini 2.5 Flash**, this tool transforms heavy, static spreadsheets (80,000+ rows) into a blazing-fast conversational data engine.
 
-### 2. High-Performance Caching Layer (`~6-second execution`)
-* Implements a **custom chunked GZIP compression layer** inside Google Script's `CacheService`.
-* Packs, compresses, and splits over 80,000 rows of transactional sales data into ~90KB Base64 string chunks to completely bypass Apps Script quotas and provide instantaneous query execution.
+Sales representatives and field managers can interact with their live data using natural language (English/Hinglish) to generate instant performance insights, complex pivot tables, and dynamic downloadable reports—all from their mobile or laptop within seconds.
 
-### 3. Dynamic Excel/CSV Export Engine
-* Detects when a user asks for spreadsheet files (e.g., *"excel me do"*, *"download report"*).
-* Bypasses secondary generative LLM formatting when exporting heavy files to conserve API tokens and avoid Rate Limit errors (HTTP 429).
-* Instantly generates client-side CSV downloads for detailed sales, dynamic pivots, or inventory arrays.
+---
 
-### 4. Advanced Pharma Analytics
-* **Automatic Pivot Tables (Cross-tabs):** Handles complex matrix queries like *"April, May, June me kisne order diya aur kisne nahi"* by structuring a `Party vs Month` dataset where missing ordering periods dynamically render as zero sales.
-* **Multi-Value Filtering:** Supports compound filtering (e.g., tracking multiple salesmen simultaneously like *"Rimpi, Anmol, Ritika, and Nandini"*), dynamically parsing the string list into internal programmatic `OR` evaluation flags.
-* **Missed Orders Tracker:** Runs mathematical delta audits comparing distinct ordering entities from the previous calendar month against active entries in the current month to flag inactive accounts for sales follow-ups.
+## 🔄 The Data Pipeline
 
-### 5. Security & Privacy Firewall (Zero Price Leakage)
-* Designed with high-security boundaries for warehouse/public querying.
-* The caching engine applies a **strict field-level block** on the `stock` sheet. It only extracts `Product Name`, `Company`, and `Current Stock` from Row 4 onwards (Row 3 headers), completely ignoring confidential fields like Cost Price, Purchase Rates, Sales Margins, and Total Stock Values.
+👤 **Sales Rep Prompt** (Hinglish/English)  
+&nbsp;&nbsp; ↳ 🧠 **Gemini LLM** (Parses unstructured text into strict JSON intent)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↳ ⚡ **GZIP Cache Layer** (Decompresses 80k+ rows into memory instantly)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↳ ⚙️ **V8 Query Engine** (Filters, groups, and pivots data in a single pass)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↳ 📊 **Output Delivery** (Client-side CSV Blob / Chat UI response)
+
+---
+
+## ✨ Key Features & Capabilities
+
+| Feature | Technical Description |
+| :--- | :--- |
+| **🧠 NLP & Entity Alignment** | Understands conversational Hinglish. Uses Gemini to map shorthand or misspelled words to the exact database entries (e.g., auto-correcting typos to strict uppercase database values) via dynamic validation lists. |
+| **⚡ Chunked GZIP Caching** | Solves Apps Script's 100KB cache limit by packing, compressing, and splitting 80,000+ transactional rows into multiple ~90KB Base64 chunks for sub-6-second reads. |
+| **📉 Missed Orders Engine** | Features a mathematical churn tracker. Compares distinct buyers from the previous month against the current month to instantly flag inactive accounts for sales follow-ups. |
+| **📊 Dynamic Excel Pivot** | Bypasses manual Excel work by generating automated Month-vs-Party cross-tabs. Missing ordering periods dynamically render as `0` sales. |
+| **📥 Token-Optimized Export** | Prevents LLM Rate Limits (HTTP 429) by bypassing secondary text-generation when exporting large datasets. Generates pure Client-Side CSV Blobs instantly. |
+
+---
+
+## 💬 Live Query Examples (For Sales Team)
+
+This assistant doesn't just answer questions; it understands complex field sales logic. Here is how the sales team can interact with it:
+
+* **Sales Rep Performance:** *" [Salesman Name] ki total sales kitni hui hai?"*
+* **Multi-Value Filtering:** *"[Salesman A] aur [Salesman B] ki item-wise sale download karo."*
+* **Instant Inventory Access:** *"[Product Name] ka live stock status check karo order lene se pehle."*
+* **Advanced Pivot/Cross-Tab:** *"April, May, June me kis party ne order diya aur kisne nahi diya, excel me do."*
+* **Lead Revival (Churn):** *"Kis party ne pichle mahine order diya par is mahine unka koi order nahi aaya?"*
 
 ---
 
 ## 🛠️ Tech Stack
 
-* **Backend / Database Layer:** Google Sheets + Google Apps Script (GAS)
-* **AI Core:** Google Gemini 2.5 Flash API (Structured JSON Responses)
-* **Caching:** Utilities GZIP + Google Script CacheService
-* **Frontend UI:** Vanilla HTML5, CSS3 (Dark Mode Template), and native Asynchronous Google Script Runners (`google.script.run`)
+| Component | Technology Used |
+| :--- | :--- |
+| **AI Core (LLM)** | Google Gemini 2.5 Flash API (Structured JSON Responses) |
+| **Backend / Runtime** | Google Apps Script (V8 Engine) |
+| **Database** | Google Sheets (Relational Ledger) |
+| **Caching Mechanism** | Custom Utilities GZIP + Apps Script `CacheService` |
+| **Frontend UI** | HTML5, CSS3, ES6 JavaScript, Asynchronous `google.script.run` |
 
 ---
 
-## 📂 File Architecture
+## 📂 Architecture Under the Hood
 
-* **`Config.gs`:** Main structural routing settings. Houses spreadsheet identifiers, active worksheet names, active model declarations, and explicit string mappings for both Sales (`FIELD_MAP`) and Stock (`STOCK_FIELD_MAP`) headers.
-* **`Cache.gs`:** Handles raw spreadsheet read actions, data cleaning, string date formatting parsing fallbacks, GZIP stream encoding, and multi-chunk cache generation routines.
-* **`QueryEngine.gs`:** The analytics powerhouse containing independent, single-pass evaluation logic for standard transactional parsing, multiple array match filters, stock auditing, and date gap comparisons (`runMissedOrdersQuery_`).
-* **`AIEngine.gs`:** Interfaces with the Generative Language API. Manages system prompts, few-shot prompt alignments, response mime schemas, API error bypass rules, and natural text output generators.
-* **`Index.html`:** Lightweight single-page dashboard. Houses styling variables, message state rendering handlers, input hooks, and client-side binary blob compilation logic for automatic report generation.
-
----
-
-## ⚙️ Setup and Installation
-
-### 1. Sheet Structure Setup
-Ensure your Google Spreadsheet contains two core sheets:
-* **Sales Sheet (`Sheet1`):** Row 1 must contain strict sales header properties matching your `FIELD_MAP` declarations (e.g., `Party Name`, `Item Name`, `Amount`, etc.).
-* **Stock Sheet (`stock`):** Row 3 must contain your explicit inventory headers (`Product Name`, `Company`, `Current Stock`). Data must strictly begin from Row 4 downwards.
-
-### 2. Apps Script Integration
-1. Inside your Google Sheet, navigate to **Extensions > Apps Script**.
-2. Delete any existing code and create the 5 distinct files matching the architecture (`Config.gs`, `Cache.gs`, etc.).
-3. Copy the corresponding repository scripts into each file.
-
-### 3. API Environment Variables
-1. In the Apps Script Editor, click on the **Project Settings (Gear Icon)**.
-2. Scroll to **Script Properties** and click **Add script property**.
-3. Set the Property key as `GEMINI_API_KEY` and paste your secret token generated from [Google AI Studio](https://aistudio.google.com/).
-
-### 4. Initialize Data Cache
-1. Open `Cache.gs` in the editor.
-2. Select the `refreshCache` function from the top toolbar dropdown.
-3. Click **Run (▶)** and authorize required sheet/external request permissions. Check the Execution Log to ensure all sales and stock rows are cleanly cached.
-4. *(Optional)* Run the `setupTrigger` function once to automatically recalculate and synchronize the local dataset cache every 5 hours.
-
-### 5. Web App Deployment
-1. Click **Deploy > New deployment** in the upper right.
-2. Select **Web app** as the deployment type.
-3. Set *Execute as* to **Me**, and *Who has access* to **Anyone** (or your preferred team restriction).
-4. Click **Deploy**, copy the provided URL, and paste it into any web browser to access your conversational MIS dashboard!
+* **`Config.gs`:** Master configuration. Holds spreadsheet IDs, active models, and column headers (`FIELD_MAP` & `STOCK_FIELD_MAP`).
+* **`Cache.gs`:** The backbone of performance. Handles data pulling, text-date fallback parsing, GZIP compression, and multi-chunk Base64 distribution.
+* **`QueryEngine.gs`:** The analytics powerhouse. Contains independent, single-pass evaluation loops for standard filtering, multi-array OR matching, and delta logic (`runMissedOrdersQuery_`).
+* **`AIEngine.gs`:** Bridges the app with the Generative Language API. Manages system prompts, few-shot examples, JSON schema enforcement, and intelligent rate-limit bypassing.
+* **`Index.html`:** A lightweight, dark-mode single-page application (SPA). Manages UI state, loading hooks, and compiles binary blobs into downloadable CSVs without server-side file creation.
 
 ---
 
-## 📝 Query Examples to Try
+## 📈 Business Impact for Sales Teams
 
-* **Sales Lookup:** *"Nandani ki total sales kitni hai"*
-* **Complex Cross-Tab Pivot:** *"April May June me kis party ne order diya aur kisne nahi diya excel me"*
-* **Targeted Multi-Filter Sheet:** *"Rimpi aur Anmol ki july ki item wise sale download karo"*
-* **Secure Stock Search:** *"Paracetamol ka live stock status check karo"*
-* **Churn Analytics Report:** *"Kis party ne pichle mahine order diya par is mahine unka koi order nahi aaya"*
+✅ **Zero Pivot Tables Needed** — Fully automated data extraction saves hours of daily manual Excel formatting for managers and field reps.  
+✅ **Lightning Fast Execution** — Queries against 80,000+ rows return results in `<6 seconds` while agents are live on the field.  
+✅ **Proactive Client Retention** — Sales teams get instant access to churned clients (Missed Orders), accelerating follow-up calls and recovering lost revenue.  
+✅ **Data Independence** — Field staff no longer need to call the back-office or wait for MIS operators to get custom reports. They just ask the AI and download the data sheet instantly.
